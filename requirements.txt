@@ -1,0 +1,18 @@
+# Vimoo runtime dependency ranges.
+# Install a CUDA-enabled Torch build matching your GPU and driver; see README.md.
+# After this file, install Vimoo Diffusers from GitHub; see README.md:
+# python -m pip install "git+https://github.com/Vimoo-AI/diffusers.git"
+torch>=2.9.0
+torchvision>=0.24.0
+transformers>=5.16.1,<6
+huggingface_hub>=1.31.0,<2.0  # also provides the optional `hf download` CLI
+accelerate>=1.0.0
+peft>=0.20.0
+safetensors>=0.4.5
+sentencepiece>=0.2.0
+protobuf>=4.25
+Pillow>=10.0.0
+imageio>=2.37
+imageio-ffmpeg>=0.6
+# TorchInductor imports setuptools through torch.utils.cpp_extension at runtime.
+setuptools>=84.0.0
