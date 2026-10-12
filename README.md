@@ -127,13 +127,16 @@ Each ComfyUI repository bundles its checkpoints, distilled LoRA adapters, shared
 
 ### Installation
 
-Use Linux with an NVIDIA CUDA GPU, Python 3.10 or later, and PyTorch 2.9.0 or later. Dependencies are listed as version ranges in [requirements.txt](requirements.txt). Install a CUDA-enabled PyTorch build compatible with your GPU and NVIDIA driver using the [PyTorch installation selector](https://pytorch.org/get-started/locally/); CUDA builds are not pinned by this repository. The supplied examples default to PyTorch SDPA, which needs no additional attention package. Install an optional backend only when selecting it; see [Runtime Options](#-runtime-options). Memory needs depend on the model, output size, frame count, offload and VAE decoding settings.
+Use Linux with an NVIDIA CUDA GPU, Python 3.10 or later (`python3 --version`), and PyTorch 2.9.0 with CUDA 13.0 (`cu130`). Use an NVIDIA driver compatible with CUDA 13.0. On Debian/Ubuntu, install virtual environment support with `sudo apt install python3-venv`. The commands below pin PyTorch and torchvision; other dependency ranges are listed in [requirements.txt](requirements.txt). The supplied examples default to PyTorch SDPA, which needs no additional attention package. Install an optional backend only when selecting it; see [Runtime Options](#-runtime-options). Memory needs depend on the model, output size, frame count, offload and VAE decoding settings.
 
 ```bash
 git clone https://github.com/Vimoo-AI/Vimoo-1.0.git
 cd Vimoo-1.0
-python -m pip install -r requirements.txt
-python -m pip install "git+https://github.com/Vimoo-AI/diffusers.git"
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install "torch==2.9.0+cu130" "torchvision==0.24.0+cu130" --index-url https://download.pytorch.org/whl/cu130
+python3 -m pip install -r requirements.txt
+python3 -m pip install "git+https://github.com/Vimoo-AI/diffusers.git"
 ```
 
 ### Download weights
@@ -164,12 +167,12 @@ Run from the repository root, replacing the image with your own file:
 
 ```bash
 # Vimoo-1.0
-python examples/vimoo_1_0_t2v.py --model ./models/Vimoo-1.0 --prompt 'A young woman in a red coat walks through a snowy city street and looks up at the falling snow.' --output t2v.mp4
-python examples/vimoo_1_0_i2v.py --model ./models/Vimoo-1.0 --prompt 'The dog shakes its whole body, then sits back down in the same spot. The camera remains fixed throughout.' --image dog.png --output i2v.mp4
+python3 examples/vimoo_1_0_t2v.py --model ./models/Vimoo-1.0 --prompt 'A young woman in a red coat walks through a snowy city street and looks up at the falling snow.' --output t2v.mp4
+python3 examples/vimoo_1_0_i2v.py --model ./models/Vimoo-1.0 --prompt 'The dog shakes its whole body, then sits back down in the same spot. The camera remains fixed throughout.' --image dog.png --output i2v.mp4
 
 # Vimoo-1.0-Lite: --image selects I2V; omit it for T2V
-python examples/vimoo_1_0_lite_ti2v.py --model ./models/Vimoo-1.0-Lite --prompt 'A young woman in a red coat walks through a snowy city street and looks up at the falling snow.' --output lite-t2v.mp4
-python examples/vimoo_1_0_lite_ti2v.py --model ./models/Vimoo-1.0-Lite --prompt 'The dog shakes its whole body, then sits back down in the same spot. The camera remains fixed throughout.' --image dog.png --output lite-i2v.mp4
+python3 examples/vimoo_1_0_lite_ti2v.py --model ./models/Vimoo-1.0-Lite --prompt 'A young woman in a red coat walks through a snowy city street and looks up at the falling snow.' --output lite-t2v.mp4
+python3 examples/vimoo_1_0_lite_ti2v.py --model ./models/Vimoo-1.0-Lite --prompt 'The dog shakes its whole body, then sits back down in the same spot. The camera remains fixed throughout.' --image dog.png --output lite-i2v.mp4
 
 ```
 
@@ -187,12 +190,25 @@ Attention is selected with `--attention-backend`; offload, compilation, VAE tili
 
 For an optional attention backend, install its dependency in the inference environment:
 
+For source builds, install CUDA Toolkit 13.0, Git and a C++ compiler. Select the
+Toolkit before running the installation command (adjust the path if installed elsewhere):
+
+```bash
+export CUDA_HOME=/usr/local/cuda-13.0
+export PATH="$CUDA_HOME/bin:$PATH"
+nvcc --version
+python3 -c "import torch; print(torch.__version__, torch.version.cuda)"
+```
+
+`nvcc` must report release `13.0`, and PyTorch must report `2.9.0+cu130` and `13.0`.
+Rebuild installed CUDA extensions after changing the PyTorch/CUDA build.
+
 | CLI value | Optional dependency |
 |---|---|
-| `fa2` | `python -m pip install "flash-attn>=2.6.3" --no-build-isolation`; prepare build dependencies from the [installation guide](https://github.com/Dao-AILab/flash-attention#installation-and-features) |
+| `fa2` | `python3 -m pip install "flash-attn>=2.6.3" --no-build-isolation`; prepare build dependencies from the [installation guide](https://github.com/Dao-AILab/flash-attention#installation-and-features) |
 | `fa3` | Build the [FlashAttention Hopper implementation](https://github.com/Dao-AILab/flash-attention/tree/main/hopper), which provides `flash_attn_interface` |
-| `fa4` | `python -m pip install flash-attn-4==4.0.0b30` |
-| `sage` | Build SageAttention 2.2.0 from pinned source: `python -m pip install "git+https://github.com/thu-ml/SageAttention.git@eb615cf6cf4d221338033340ee2de1c37fbdba4a" --no-build-isolation`; see the [installation guide](https://github.com/thu-ml/SageAttention/tree/eb615cf6cf4d221338033340ee2de1c37fbdba4a#installation) |
+| `fa4` | `python3 -m pip install flash-attn-4==4.0.0b30` |
+| `sage` | Build SageAttention 2.2.0 from pinned source: `python3 -m pip install "git+https://github.com/thu-ml/SageAttention.git@eb615cf6cf4d221338033340ee2de1c37fbdba4a" --no-build-isolation`; see the [installation guide](https://github.com/thu-ml/SageAttention/tree/eb615cf6cf4d221338033340ee2de1c37fbdba4a#installation) |
 
 Then add, for example, `--attention-backend fa4` to the selected command. Source builds need the matching CUDA Toolkit and build tools. Missing optional dependencies produce an error for the selected backend. The CLI uses installed kernels; FA2/FA3 do not download Hub kernels automatically.
 
