@@ -4,7 +4,7 @@
 [![Hugging Face](https://img.shields.io/badge/HuggingFace-Vimoo--AI-orange?logo=huggingface)](https://huggingface.co/Vimoo-AI)
 [![ComfyUI-Vimoo](https://img.shields.io/badge/ComfyUI--Vimoo-Repo-blue?logo=github)](https://github.com/Vimoo-AI/ComfyUI-Vimoo)
 [![Vimoo-1.0-MLX](https://img.shields.io/badge/Vimoo--1.0--MLX-Repo-blue?logo=github)](https://github.com/Vimoo-AI/Vimoo-1.0-MLX)
-[![Paper](https://img.shields.io/badge/Paper-arXiv-B31B1B?logo=arxiv)](https://arxiv.org/abs/TBD)
+[![Tech Report](https://img.shields.io/badge/Tech%20Report-Vimoo-red)](https://vimoo.ai/research)
 
 Vimoo 1.0 is an open-source video generation model family for text-to-video (T2V) and image-to-video (I2V), built on a dual-stream MMDiT. Its lightweight variant, Vimoo 1.0 - Lite, handles both tasks in a single model for faster inference. This repository provides Python inference examples.
 
