@@ -14,7 +14,7 @@ copyright notices and license terms continue to apply.
 
 3. Glyph-ByT5 and tokenizer
    Source: https://huggingface.co/nlpcvcode/Glyph-SDXL-v2
-   Components: fine-tuned encoder weights and font/color vocabulary
+   Components: encoder weights and font/color vocabulary, downloaded separately and prepared locally
    Base config and tokenizer: https://huggingface.co/google/byt5-small
 
 4. VAE

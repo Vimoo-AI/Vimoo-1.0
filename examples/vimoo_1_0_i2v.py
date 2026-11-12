@@ -34,6 +34,15 @@ def main(argv=None):
     else:
         from _attention import resolve_attention_backend
 
+    if __package__:
+        from ._byt5 import require_byt5_components
+    else:
+        from _byt5 import require_byt5_components
+    try:
+        require_byt5_components(args.model)
+    except ValueError as error:
+        parser.error(str(error))
+
     attention_backend = resolve_attention_backend(args.attention_backend)
 
     import torch

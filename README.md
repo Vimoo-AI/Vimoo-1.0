@@ -121,7 +121,7 @@ Vimoo 1.0 comes in two models, Vimoo 1.0 and Vimoo 1.0 - Lite. Each Hugging Face
   </tbody>
 </table>
 
-Each ComfyUI repository bundles its checkpoints, distilled LoRA adapters, shared encoders and VAE. Distilled models are available only for ComfyUI and MLX. Vimoo-1.0 T2V Distilled and I2V Distilled use different base checkpoints from Vimoo-1.0 T2V and I2V; download each task's matching base and adapter listed in the [ComfyUI guide](https://github.com/Vimoo-AI/ComfyUI-Vimoo#download-weights). The Vimoo-1.0 T2V Distilled, Vimoo-1.0 I2V Distilled and Vimoo-1.0-Lite TI2V Distilled adapters are not interchangeable. Parameters count the video denoiser only.
+Each ComfyUI repository includes its checkpoints, distilled LoRA adapters, Qwen text encoder, SigLIP vision encoder and VAE. Distilled models are available only for ComfyUI and MLX. Vimoo-1.0 T2V Distilled and I2V Distilled use different base checkpoints from Vimoo-1.0 T2V and I2V; download each task's matching base and adapter listed in the [ComfyUI guide](https://github.com/Vimoo-AI/ComfyUI-Vimoo#download-weights). The Vimoo-1.0 T2V Distilled, Vimoo-1.0 I2V Distilled and Vimoo-1.0-Lite TI2V Distilled adapters are not interchangeable. Parameters count the video denoiser only.
 
 ## 🚀 Quick Start
 
@@ -150,7 +150,20 @@ hf download Vimoo-AI/Vimoo-1.0-Lite --local-dir ./models/Vimoo-1.0-Lite         
 
 Vimoo-1.0 stores separate T2V and I2V Transformers. To download one task only, add `--exclude "transformer_i2v/*"` for T2V or `--exclude "transformer/*"` for I2V.
 
-Both repositories contain the Vimoo Transformers, the Glyph text encoder and sampling configurations. On the first run, Diffusers downloads Qwen2.5-VL-7B-Instruct, the Wan 2.2 VAE and, for I2V, SigLIP from Hugging Face at the revisions recorded in `modular_model_index.json`. For offline use, run once with network access, then set `HF_HUB_OFFLINE=1`.
+Both repositories contain the Vimoo Transformers and sampling configurations. On the first run, Diffusers downloads Qwen2.5-VL-7B-Instruct, the Wan 2.2 VAE and, for I2V, SigLIP from Hugging Face at the revisions recorded in `modular_model_index.json`. For offline use, run once with network access, then set `HF_HUB_OFFLINE=1`.
+
+
+#### ByT5 encoder
+
+Vimoo uses [Glyph-SDXL-v2](https://huggingface.co/nlpcvcode/Glyph-SDXL-v2) as its ByT5 encoder. Download the encoder and the base ByT5 configuration and tokenizer, then convert the files for inference:
+
+```bash
+hf download nlpcvcode/Glyph-SDXL-v2 --revision a5aac7f492e85819208e7ed14aa4402d9c0b1b65 --include "checkpoints/byt5_model.pt" "assets/color_idx.json" "assets/multilingual_10-lang_idx.json" --local-dir ./glyph-source/Glyph-SDXL-v2
+hf download google/byt5-small --revision 68377bdc18a2ffec8a0533fef03b1c513a4dd49d --include "config.json" "tokenizer_config.json" "special_tokens_map.json" --local-dir ./glyph-source/byt5-small
+python3 tools/convert_byt5.py --source-dir ./glyph-source/Glyph-SDXL-v2 --base-dir ./glyph-source/byt5-small --output ./models/Vimoo-1.0 --format diffusers
+```
+
+For Vimoo-1.0-Lite, set `--output` to `./models/Vimoo-1.0-Lite`.
 
 ### Inference examples
 
